@@ -3,6 +3,10 @@ package br.univali.cc.m3.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.univali.cc.m3.errors.AccountDoesntExists;
+import br.univali.cc.m3.errors.AccountNumberAlreadyExists;
+import br.univali.cc.m3.errors.InvalidBalanceValue;
+
 public class Bank {
 	private String name;
 	private int accountNumber;
@@ -15,13 +19,21 @@ public class Bank {
 		this.accounts = new ArrayList<CurrentAccount>();
 	}
 
-	public void createAccount(double initialBalance) {
+	public void createAccount(double initialBalance) throws AccountNumberAlreadyExists {
 		int newAccountNumber = this.initialAccountNumber++;
+		CurrentAccount account = this.findAccount(newAccountNumber);
+		if (account != null) {
+			throw new AccountNumberAlreadyExists();
+		}
 		this.accounts.add(new CurrentAccount(newAccountNumber + 1, initialBalance));
 	}
 
-	public void createAccount(double initialBalance, double limit) {
+	public void createAccount(double initialBalance, double limit) throws AccountNumberAlreadyExists {
 		int newAccountNumber = this.initialAccountNumber++;
+		CurrentAccount account = this.findAccount(newAccountNumber);
+		if (account != null) {
+			throw new AccountNumberAlreadyExists();
+		}
 		this.accounts.add(new CurrentAccount(newAccountNumber + 1, initialBalance, limit));
 	}
 
@@ -44,17 +56,28 @@ public class Bank {
 	public void draw(int accountNumber, double value) {
 		CurrentAccount currentAccount = this.findAccount(accountNumber);
 		if (currentAccount != null) {
-			currentAccount.draw(value);
+			try {
+				currentAccount.draw(value);
+			} catch (InvalidBalanceValue error) {
+				System.out.println(error.getMessage());
+			}
 		}
 	}
 
-	public void transfer(int toAccountNumber, int fromAccountNumber, double value) {
+	public void transfer(int toAccountNumber, int fromAccountNumber, double value)
+			throws InvalidBalanceValue, AccountDoesntExists {
 		CurrentAccount origin = this.findAccount(toAccountNumber);
 		CurrentAccount destiny = this.findAccount(fromAccountNumber);
-		if (origin != null && destiny != null) {
-			if (origin.draw(value)) {
-				destiny.deposit(value);
+		try {
+			if (origin != null && destiny != null) {
+				if (origin.draw(value)) {
+					destiny.deposit(value);
+				}
+			} else {
+				throw new AccountDoesntExists();
 			}
+		} catch (InvalidBalanceValue error) {
+			System.out.println(error.getMessage());
 		}
 	}
 

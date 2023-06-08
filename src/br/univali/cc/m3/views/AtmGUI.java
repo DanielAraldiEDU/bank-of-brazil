@@ -1,6 +1,8 @@
 package br.univali.cc.m3.views;
 
 import br.univali.cc.m3.controllers.Bank;
+import br.univali.cc.m3.errors.InvalidFormatValue;
+
 import javax.swing.JOptionPane;
 
 public class AtmGUI {
@@ -22,7 +24,7 @@ public class AtmGUI {
 		JOptionPane.showMessageDialog(null, value);
 	}
 
-	public void menu() {
+	public void menu() throws InvalidFormatValue, Exception {
 		char option;
 
 		do {
@@ -35,7 +37,7 @@ public class AtmGUI {
 					"6 - Extract",
 					"E - Exit"
 			};
-			String selectedValue = this.readValue("Selec an option", options);
+			String selectedValue = this.readValue("Select an option", options);
 			if (selectedValue == null) {
 				option = 'E';
 			} else {
@@ -65,38 +67,72 @@ public class AtmGUI {
 		} while (option != 'E');
 	}
 
-	private void createSampleAccount() {
-		double initialBalance = Double.parseDouble(readValue("Enter initial balance"));
-		this.bank.createAccount(initialBalance);
+	private void createSampleAccount() throws Exception, InvalidFormatValue {
+		try {
+			double initialBalance = Double.parseDouble(readValue("Enter initial balance"));
+			this.bank.createAccount(initialBalance);
+		} catch (InvalidFormatValue error) {
+			throw new InvalidFormatValue();
+		} catch (Exception error) {
+			throw new Exception("Error creating sample account!");
+		}
 	}
 
-	private void createSpecialAccount() {
-		double initialBalance = Double.parseDouble(readValue("Enter initial balance"));
-		double limit = Double.parseDouble(readValue("Enter limit from account"));
-		this.bank.createAccount(initialBalance, limit);
+	private void createSpecialAccount() throws Exception, InvalidFormatValue {
+		try {
+			double initialBalance = Double.parseDouble(readValue("Enter initial balance"));
+			double limit = Double.parseDouble(readValue("Enter limit from account"));
+			this.bank.createAccount(initialBalance, limit);
+		} catch (InvalidFormatValue error) {
+			throw new InvalidFormatValue();
+		} catch (Exception error) {
+			throw new Exception("Error creating special account!");
+		}
 	}
 
-	private void deposit() {
-		int accountNumber = Integer.parseInt(readValue("Enter account number"));
-		double value = Double.parseDouble(readValue("Informe o valor para depósito"));
-		this.bank.deposit(accountNumber, value);
+	private void deposit() throws Exception, InvalidFormatValue {
+		try {
+			int accountNumber = Integer.parseInt(readValue("Enter account number"));
+			double value = Double.parseDouble(readValue("Informe o valor para depósito"));
+			this.bank.deposit(accountNumber, value);
+		} catch (InvalidFormatValue error) {
+			throw new InvalidFormatValue();
+		} catch (Exception error) {
+			throw new Exception("Error on deposit!");
+		}
 	}
 
-	private void draw() {
-		int accountNumber = Integer.parseInt(readValue("Enter account number"));
-		double value = Double.parseDouble(readValue("Enter the withdraw value"));
-		this.bank.draw(accountNumber, value);
+	private void draw() throws Exception, InvalidFormatValue {
+		try {
+			int accountNumber = Integer.parseInt(readValue("Enter account number"));
+			double value = Double.parseDouble(readValue("Enter the withdraw value"));
+			this.bank.draw(accountNumber, value);
+		} catch (InvalidFormatValue error) {
+			throw new InvalidFormatValue();
+		} catch (Exception error) {
+			throw new Exception("Error on draw!");
+		}
 	}
 
-	private void transfer() {
-		int toAccountNumber = Integer.parseInt(readValue("Enter origin account number"));
-		int fromAccountNumber = Integer.parseInt(readValue("Enter destiny account number"));
-		double value = Double.parseDouble(readValue("Enter the transfer value"));
-		this.bank.transfer(toAccountNumber, fromAccountNumber, value);
+	private void transfer() throws Exception, InvalidFormatValue {
+		try {
+			int toAccountNumber = Integer.parseInt(readValue("Enter origin account number"));
+			int fromAccountNumber = Integer.parseInt(readValue("Enter destiny account number"));
+			double value = Double.parseDouble(readValue("Enter the transfer value"));
+			this.bank.transfer(toAccountNumber, fromAccountNumber, value);
+		} catch (InvalidFormatValue error) {
+			throw new InvalidFormatValue();
+		} catch (Exception error) {
+			throw new Exception("Error on transfer!");
+		}
 	}
 
-	private void extract() {
-		int accountNumber = Integer.parseInt(readValue("Enter account number"));
-		this.writeValue(this.bank.getExtract(accountNumber));
+	private void extract() throws InvalidFormatValue {
+		try {
+			int accountNumber = Integer.parseInt(readValue("Enter account number"));
+			this.writeValue(this.bank.getExtract(accountNumber));
+		} catch (InvalidFormatValue error) {
+			throw new InvalidFormatValue();
+		}
 	}
 }

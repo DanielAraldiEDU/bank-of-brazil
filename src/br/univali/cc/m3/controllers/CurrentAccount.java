@@ -3,6 +3,8 @@ package br.univali.cc.m3.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.univali.cc.m3.errors.InvalidBalanceValue;
+
 public class CurrentAccount {
 	private boolean isSpecial;
 	private double limit;
@@ -39,13 +41,13 @@ public class CurrentAccount {
 		return false;
 	}
 
-	protected boolean draw(double value) {
+	protected boolean draw(double value) throws InvalidBalanceValue {
 		if (this.balance + this.limit >= value) {
 			this.balance -= value;
 			this.createMoviment("Withdraw", 'D', value);
 			return true;
 		}
-		return false;
+		throw new InvalidBalanceValue();
 	}
 
 	private void createMoviment(String description, char type, double value) {
@@ -66,5 +68,4 @@ public class CurrentAccount {
 		}
 		return extract;
 	}
-
 }
